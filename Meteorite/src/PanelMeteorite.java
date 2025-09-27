@@ -52,8 +52,8 @@ class PanelMeteorite extends JFrame {
 
             int W = Constants.WINDOW_WIDTH;
             int H = Constants.WINDOW_HEIGHT;
-            // สุ่มตำแหน่ง (กันขอบ 50px)(
-            int margin = 50;
+            // สุ่มตำแหน่ง (กันขอบ 30px)(
+            int margin = 30;
 
             meteorite[i].setLocation(
                     rand.nextInt(Math.max(1, W - meteorite[i].getWidth() - 2 * margin)) + margin,
@@ -61,15 +61,15 @@ class PanelMeteorite extends JFrame {
             BackG.add(meteorite[i]);
 
             // ความเร็วสุ่ม
-            double dx = (rand.nextBoolean() ? 1 : -1) * (rand.nextDouble(1) + 0.2); // 0.2..1.2
-            double dy = (rand.nextBoolean() ? 1 : -1) * (rand.nextDouble(1) + 0.2);
+            double dx = (rand.nextBoolean() ? 1 : -1) * (rand.nextDouble(1.2) + 0.2); // 0.2..1.4
+            double dy = (rand.nextBoolean() ? 1 : -1) * (rand.nextDouble(1.2) + 0.2);
 
             mtoT[i] = new meteoriteThread(meteorite[i], BackG, dx, dy, this);
         }
 
         setVisible(true);
 
-        // รอสร้างทุก Thread เสร็จก่อนค่อยไป start Thread
+        // รอสร้างทุก Thread เสร็จก่อนค่อยไป start Thread ทุกตัว
         for (int i = 0; i < meteorite.length; i++) {
             mtoT[i].start();
         }
