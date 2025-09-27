@@ -121,7 +121,7 @@ class PanelMeteorite extends JFrame {
         double ra = Math.min(a.getWidth(), a.getHeight()) * 0.50;
         double rb = Math.min(b.getWidth(), b.getHeight()) * 0.50;
 
-        // สูตร distance= (x1​−x2​)^2 + (y1​−y2​)^2
+        // สูตร distance= (x1−x2)^2 + (y1−y2)^2
         double dx = ax - bx;
         double dy = ay - by;
 
