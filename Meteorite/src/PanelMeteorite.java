@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 import java.util.Random;
 
 class PanelMeteorite extends JFrame {
@@ -26,7 +27,7 @@ class PanelMeteorite extends JFrame {
         for (int i = 0; i < meteorite.length; i++) {
             String chosenFile = Constants.imageFiles[rand.nextInt(Constants.imageFiles.length)];
 
-            ImageIcon rawIcon = new ImageIcon("src/Image/" + chosenFile);
+            ImageIcon rawIcon = new ImageIcon(System.getProperty("user.dir") + File.separator + "src" + File.separator + "Image" + File.separator + chosenFile);
             Image scaled = rawIcon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
             mtoIcon[i] = new ImageIcon(scaled);
 
