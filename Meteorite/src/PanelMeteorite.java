@@ -79,14 +79,12 @@ class PanelMeteorite extends JFrame {
         for (int i = 0; i < meteorite.length; i++) {
             if (meteorite[i] == null || dead[i] || !meteorite[i].isVisible())
                 continue;
-            Rectangle r1 = meteorite[i].getBounds();
 
             for (int j = i + 1; j < meteorite.length; j++) {
                 if (meteorite[j] == null || dead[j] || !meteorite[j].isVisible())
                     continue;
-                Rectangle r2 = meteorite[j].getBounds();
 
-                if (r1.intersects(r2)) {
+                if (Checkcircle(i, j)) {
                     int kill = rand.nextBoolean() ? i : j;
                     if (!dead[kill] && meteorite[kill] != null && meteorite[kill].isVisible()) {
                         dead[kill] = true;
@@ -108,6 +106,32 @@ class PanelMeteorite extends JFrame {
 
     public void reduce_Count() {
         this.count--;
+    }
+
+    private boolean Checkcircle(int i, int j) {
+        JLabel a = meteorite[i], b = meteorite[j];
+        // center ของแต่ละลูก
+        double ax = a.getX() + a.getWidth() / 2.0;
+        double ay = a.getY() + a.getHeight() / 2.0;
+        
+        double bx = b.getX() + b.getWidth() / 2.0;
+        double by = b.getY() + b.getHeight() / 2.0;
+
+        // หา radius
+        double ra = Math.min(a.getWidth(), a.getHeight()) * 0.50;
+        double rb = Math.min(b.getWidth(), b.getHeight()) * 0.50;
+
+        // หาระยะห่าง^2
+        double dx = ax - bx;
+        double dy = ay - by;
+
+        double dist2 = dx * dx + dy * dy;
+
+        // รัศมี
+        double sumR = ra + rb;
+
+        // หาระยะห่าง^2 <= รัศมี^2
+        return dist2 <= sumR * sumR; // แตะกันพอดี = ชน
     }
 
 }
