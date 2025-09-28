@@ -3,7 +3,7 @@ import javax.swing.*;
 public class Meteorite {
     public static void main(String[] args) {
         String input = JOptionPane.showInputDialog(null,
-                "Enter number :",
+                "Enter Meteorite : ",
                 String.valueOf(Constants.amount_meteorite));
         int asteroidCount = Constants.amount_meteorite;
         try {
