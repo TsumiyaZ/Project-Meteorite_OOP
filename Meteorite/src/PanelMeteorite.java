@@ -6,24 +6,53 @@ import java.util.Random;
 class PanelMeteorite extends JFrame {
 
     int amountMeteorite = Constants.amount_meteorite;
-    JLabel[] meteorite = new JLabel[amountMeteorite];
-    meteoriteThread[] mtoT = new meteoriteThread[amountMeteorite];
-    ImageIcon[] mtoIcon = new ImageIcon[amountMeteorite];
-    int count = amountMeteorite;
+    JLabel[] meteorite ;
+    meteoriteThread[] mtoT ;
+    ImageIcon[] mtoIcon;
+    int count;
     JLabel Count_Meteorite = new JLabel();
-
-    boolean[] dead = new boolean[amountMeteorite];
+    private ImageIcon bomb;
+    static boolean[] dead;
+    static boolean[] exploding ;
 
     Random rand = new Random();
     // พื้นหลัง
     private JPanel BackG;
 
-    PanelMeteorite() {
+    // โหลดครั้งเดียว
+    ImageIcon[] preloadedIcons;
+
+    PanelMeteorite(int PanelMeteorite) {
         setSize(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(null);
         setResizable(false);
+
+        String bombPath = System.getProperty("user.dir") + File.separator
+                + "Image" + File.separator + "bomb.gif";
+        bomb = new ImageIcon(bombPath);
+
+        String[] files = Constants.imageFiles;
+        preloadedIcons = new ImageIcon[files.length];
+
+        for (int i = 0; i < files.length; i++) {
+            ImageIcon raw =  new ImageIcon(System.getProperty("user.dir") + File.separator
+                    + "Image" + File.separator + files[i]);
+            Image scaled = raw.getImage().getScaledInstance(Constants.Scale_Meteorite,
+                    Constants.Scale_Meteorite,
+                    Image.SCALE_SMOOTH);
+            preloadedIcons[i] = new ImageIcon(scaled);
+        }
+
+        amountMeteorite = PanelMeteorite;
+        System.out.println("debug "+amountMeteorite);
+        meteorite = new JLabel[amountMeteorite];
+        mtoT = new meteoriteThread[amountMeteorite];
+        mtoIcon = new ImageIcon[amountMeteorite];
+        dead = new boolean[amountMeteorite];
+        exploding = new boolean[amountMeteorite];
+        count = amountMeteorite;
 
         BackG = new JPanel(null);
         BackG.setBackground(Color.BLACK);
@@ -39,16 +68,10 @@ class PanelMeteorite extends JFrame {
         BackG.add(Count_Meteorite);
 
         for (int i = 0; i < meteorite.length; i++) {
-            String chosenFile = Constants.imageFiles[rand.nextInt(Constants.imageFiles.length)];
 
-            ImageIcon rawIcon = new ImageIcon(System.getProperty("user.dir") + File.separator + "src" + File.separator
-                    + "Image" + File.separator + chosenFile);
-            Image scaled = rawIcon.getImage().getScaledInstance(Constants.Scale_Meteorite, Constants.Scale_Meteorite,
-                    Image.SCALE_SMOOTH);
-            mtoIcon[i] = new ImageIcon(scaled);
+            meteorite[i] = new JLabel(preloadedIcons[rand.nextInt(preloadedIcons.length)]);
 
-            meteorite[i] = new JLabel(mtoIcon[i]);
-            meteorite[i].setSize(50, 50);
+            meteorite[i].setSize(64, 64);
 
             int W = Constants.WINDOW_WIDTH;
             int H = Constants.WINDOW_HEIGHT;
@@ -61,10 +84,10 @@ class PanelMeteorite extends JFrame {
             BackG.add(meteorite[i]);
 
             // ความเร็วสุ่ม
-            double dx = (rand.nextBoolean() ? 1 : -1) * (rand.nextDouble(1.2) + 0.2); // 0.2..1.4
-            double dy = (rand.nextBoolean() ? 1 : -1) * (rand.nextDouble(1.2) + 0.2);
+            double dx = (rand.nextBoolean() ? 1 : -1) * (rand.nextDouble(1) + 0.5); // 0.2..1.4
+            double dy = (rand.nextBoolean() ? 1 : -1) * (rand.nextDouble(1) + 0.5);
 
-            mtoT[i] = new meteoriteThread(meteorite[i], BackG, dx, dy, this);
+            mtoT[i] = new meteoriteThread(meteorite[i], BackG, dx, dy, this,i);
         }
 
         setVisible(true);
@@ -75,37 +98,56 @@ class PanelMeteorite extends JFrame {
         }
     }
 
+    public static boolean getDead(int id ){
+        if (exploding[id] && dead[id]){
+            return true;
+        }
+        return false;
+    }
+
+
     void check_Collisions() {
         for (int i = 0; i < meteorite.length; i++) {
-            if (meteorite[i] == null || dead[i] || !meteorite[i].isVisible())
-                continue;
+            if (meteorite[i] == null || dead[i] || exploding[i] || !meteorite[i].isVisible()) continue;
 
             for (int j = i + 1; j < meteorite.length; j++) {
-                if (meteorite[j] == null || dead[j] || !meteorite[j].isVisible())
-                    continue;
+                if (meteorite[j] == null || dead[j] || exploding[j] || !meteorite[j].isVisible()) continue;
 
                 if (Checkcircle(i, j)) {
                     int kill = rand.nextBoolean() ? i : j;
-                    if (!dead[kill] && meteorite[kill] != null && meteorite[kill].isVisible()) {
+                    if (!dead[kill] && !exploding[kill]) {
                         dead[kill] = true;
-                        meteorite[kill].setVisible(false);
-                        try {
-                            if (mtoT[kill] != null)
-                                mtoT[kill].interrupt();
-                        } catch (Exception e) {
-                        }
+                        exploding[kill] = true;
+                        if (count > 0) count--;
+                        Count_Meteorite.setText("Meteorite : " + count);
+                        explode(kill);
+                        mtoT[kill].interrupt();
                     }
+                    break;
                 }
             }
         }
     }
 
-    public void setCount() {
-        Count_Meteorite.setText("Meteorite : " + this.count);
-    }
 
-    public void reduce_Count() {
-        this.count--;
+
+    public void explode(int id) {
+        if (!dead[id]) return;
+
+        meteorite[id].setIcon(bomb);
+
+        Thread t = new Thread(() -> {
+            try {
+                Thread.sleep(200);
+                meteorite[id].setVisible(false);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } finally {
+                exploding[id] = false;
+            }
+        }, "Explosion-" + id);
+
+        t.start();
     }
 
     private boolean Checkcircle(int i, int j) {
