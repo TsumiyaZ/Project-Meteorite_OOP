@@ -56,7 +56,7 @@ class meteoriteThread extends Thread {
                     owner.check_Collisions();
                 }
 
-                Thread.sleep(5);
+                Thread.sleep(10);
             }
         } catch (InterruptedException ee) {
         }
