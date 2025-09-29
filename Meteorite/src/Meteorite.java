@@ -8,7 +8,7 @@ class Meteorite extends JFrame {
 
     public Meteorite() {
         setTitle("Enter Meteorite Count");
-        setSize(300, 150);
+        setSize(300, 100);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
