@@ -9,7 +9,6 @@ class PanelMeteorite extends JFrame {
     JLabel[] meteorite ;
     meteoriteThread[] mtoT ;
     ImageIcon[] mtoIcon;
-    int count;
     JLabel Count_Meteorite = new JLabel();
     private ImageIcon bomb;
     static boolean[] dead;
@@ -52,16 +51,11 @@ class PanelMeteorite extends JFrame {
         mtoIcon = new ImageIcon[amountMeteorite];
         dead = new boolean[amountMeteorite];
         exploding = new boolean[amountMeteorite];
-        count = amountMeteorite;
 
         BackG = new JPanel(null);
         BackG.setBackground(Color.BLACK);
         BackG.setBounds(0, 0, Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
         add(BackG);
-
-        Count_Meteorite.setText("Meteorite : " + this.count);
-        Count_Meteorite.setFont(new Font("SansSerif", Font.BOLD, 16));
-        Count_Meteorite.setForeground(Color.WHITE);
 
         int marginCount = 16;
         Count_Meteorite.setBounds(Constants.WINDOW_WIDTH - 160 - marginCount, marginCount, 160, 30);
@@ -110,18 +104,26 @@ class PanelMeteorite extends JFrame {
         for (int i = 0; i < meteorite.length; i++) {
             if (meteorite[i] == null || dead[i] || exploding[i] || !meteorite[i].isVisible()) continue;
 
-            for (int j = i + 1; j < meteorite.length; j++) {
+            for (int j = 0; j < meteorite.length; j++) {
+                if (i == j) continue;
+
                 if (meteorite[j] == null || dead[j] || exploding[j] || !meteorite[j].isVisible()) continue;
 
                 if (Checkcircle(i, j)) {
-                    int kill = rand.nextBoolean() ? i : j;
-                    if (!dead[kill] && !exploding[kill]) {
-                        dead[kill] = true;
-                        exploding[kill] = true;
-                        if (count > 0) count--;
-                        Count_Meteorite.setText("Meteorite : " + count);
-                        explode(kill);
-                        mtoT[kill].interrupt();
+                    if (i < j) {
+                        if (!dead[i] && !exploding[i]) {
+                            dead[i] = true;
+                            exploding[i] = true;
+                            explode(i);
+                            mtoT[i].interrupt();
+                        }
+                    } else {
+                        if (!dead[j] && !exploding[j]) {
+                            dead[j] = true;
+                            exploding[j] = true;
+                            explode(j);
+                            mtoT[j].interrupt();
+                        }
                     }
                 }
             }
