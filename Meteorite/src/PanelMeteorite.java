@@ -123,7 +123,6 @@ class PanelMeteorite extends JFrame {
                         explode(kill);
                         mtoT[kill].interrupt();
                     }
-                    break;
                 }
             }
         }
@@ -160,8 +159,8 @@ class PanelMeteorite extends JFrame {
         double by = b.getY() + b.getHeight() / 2.0;
 
         // หา radius
-        double ra = Math.min(a.getWidth(), a.getHeight()) * 0.50;
-        double rb = Math.min(b.getWidth(), b.getHeight()) * 0.50;
+        double ra = Math.min(a.getWidth(), a.getHeight()) * 0.40;
+        double rb = Math.min(b.getWidth(), b.getHeight()) * 0.40;
 
         // สูตร distance= (x1−x2)^2 + (y1−y2)^2
         double dx = ax - bx;
