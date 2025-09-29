@@ -9,7 +9,6 @@ class PanelMeteorite extends JFrame {
     JLabel[] meteorite ;
     meteoriteThread[] mtoT ;
     ImageIcon[] mtoIcon;
-    JLabel Count_Meteorite = new JLabel();
     private ImageIcon bomb;
     static boolean[] dead;
     static boolean[] exploding ;
@@ -21,7 +20,7 @@ class PanelMeteorite extends JFrame {
     // โหลดครั้งเดียว
     ImageIcon[] preloadedIcons;
 
-    PanelMeteorite(int PanelMeteorite) {
+    PanelMeteorite(int CountMeteorite) {
         setSize(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -44,7 +43,7 @@ class PanelMeteorite extends JFrame {
             preloadedIcons[i] = new ImageIcon(scaled);
         }
 
-        amountMeteorite = PanelMeteorite;
+        amountMeteorite = CountMeteorite;
         System.out.println("debug "+amountMeteorite);
         meteorite = new JLabel[amountMeteorite];
         mtoT = new meteoriteThread[amountMeteorite];
@@ -56,10 +55,6 @@ class PanelMeteorite extends JFrame {
         BackG.setBackground(Color.BLACK);
         BackG.setBounds(0, 0, Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
         add(BackG);
-
-        int marginCount = 16;
-        Count_Meteorite.setBounds(Constants.WINDOW_WIDTH - 160 - marginCount, marginCount, 160, 30);
-        BackG.add(Count_Meteorite);
 
         for (int i = 0; i < meteorite.length; i++) {
 
@@ -142,21 +137,22 @@ class PanelMeteorite extends JFrame {
                 Thread.sleep(200);
                 meteorite[id].setVisible(false);
             } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
             } finally {
                 exploding[id] = false;
             }
-        }, "Explosion-" + id);
+        });
 
         t.start();
     }
 
     private boolean Checkcircle(int i, int j) {
-        JLabel a = meteorite[i], b = meteorite[j];
+        JLabel a = meteorite[i];
+        JLabel b = meteorite[j];
         // center ของแต่ละลูก
+        // i
         double ax = a.getX() + a.getWidth() / 2.0;
         double ay = a.getY() + a.getHeight() / 2.0;
-        
+        // j
         double bx = b.getX() + b.getWidth() / 2.0;
         double by = b.getY() + b.getHeight() / 2.0;
 
